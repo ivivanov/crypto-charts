@@ -1,0 +1,40 @@
+<html>
+
+<body onload="renderHello()">
+    <div id="target">Loading...</div>
+    <script id="template" type="x-tmpl-mustache">
+      Hello {{ name }}!
+    </script>
+
+    <script src="https://unpkg.com/mustache@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+</body>
+<script>
+    function renderHello() {
+        const template = document.getElementById('template').innerHTML;
+        const rendered = Mustache.render(template, { name: 'Luke' });
+        document.getElementById('target').innerHTML = rendered;
+
+        let config = {
+            url: 'https://storage.googleapis.com/crypto_charts/',
+            method: 'get',
+            headers: {
+                'Accept': 'application/json'
+            },
+        }
+
+        axios.request(config)  .then(function (response) {
+                // handle success
+                console.log(response);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+            .finally(function () {
+                // always executed
+            });
+    }
+</script>
+
+</html>
