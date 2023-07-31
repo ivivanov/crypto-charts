@@ -13,4 +13,4 @@ Current implementation includes:
 - multistage Dockerfile for building and running the app as cron job
 
 ## Demo
-Instant load of ~173 charts: [demo](http://)
+7 day charts: [demo](https://ivivanov.github.io/crypto-charts/demo-7D.html)
