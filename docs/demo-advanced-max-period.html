@@ -7,14 +7,13 @@
   <script src="https://unpkg.com/mustache@latest"></script>
   <style>
     img{
-      height: 100px;
-      width: 200px;
+      width: 960px;
+      height: 540px;
     }
     div{
       float: left;
       padding: 10px;
       text-align: center;
-      border-top: 1px solid gray;
     }
     p {
       font-size: small;
@@ -31,7 +30,7 @@
       {{#pairs}}
       <div>
         <p>{{.}}</p>
-        <img src="https://storage.googleapis.com/crypto_charts/charts/{{.}}/chart.svg" alt="{{.}} chart"></li>
+        <img src="https://storage.googleapis.com/crypto_charts/advanced/{{.}}/chart.svg" alt="{{.}} chart"></li>
       </div>
       {{/pairs}}
     </script>

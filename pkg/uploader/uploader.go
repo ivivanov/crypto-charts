@@ -17,17 +17,28 @@ import (
 var credentials []byte
 
 const (
-	BUCKET        = "crypto_charts"
-	OBJECT_PATH   = "charts/"
 	CACHE_CONTROL = "Cache-Control:private, max-age=0, no-transform" // disables bucket caching
 	CONTENT_TYPE  = "image/svg+xml"
 )
 
-type GoogleBucketUploader struct{}
+type GoogleBucketUploader struct {
+	bucket     string
+	objectPath string
+}
+
+func NewGoogleBucketUploader(bucket, objectPath string) *GoogleBucketUploader {
+	return &GoogleBucketUploader{
+		bucket:     bucket,
+		objectPath: objectPath,
+	}
+}
 
 // UploadSVG uploads an SVG by using google storage package.
 func (u *GoogleBucketUploader) UploadSVG(pair, svg string) error {
-	fileUpload(BUCKET, fmt.Sprintf("charts/%v/chart.svg", pair), []byte(svg))
+	err := fileUpload(u.bucket, fmt.Sprintf("%v/%v/chart.svg", u.objectPath, pair), []byte(svg))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

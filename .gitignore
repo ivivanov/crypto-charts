@@ -23,3 +23,4 @@ go.work
 gcp-credentials.json
 modd.conf
 .env
+*.yaml.*
