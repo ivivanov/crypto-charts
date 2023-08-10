@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/ivivanov/crypto-charts/pkg/data/bitstamp"
+	"github.com/ivivanov/crypto-charts/pkg/fetchers/bitstamp"
 	"github.com/ivivanov/crypto-charts/pkg/generators"
-	"github.com/ivivanov/crypto-charts/pkg/types"
 )
 
 const (
@@ -25,8 +24,8 @@ func TestUploadSVG_integration(t *testing.T) {
 	}
 
 	ohlc := ohlcData["data"].OHCL
-	generator := &generators.NewSimpleLineChartGenerator()
-	historicalData := types.MapOHLCtoHistoricalData(ohlc)
+	generator := generators.NewSimpleLineChartGenerator()
+	historicalData := bitstamp.MapOHLCtoMarketInfo(ohlc)
 
 	svg, err := generator.NewLineChart(historicalData)
 	if err != nil {

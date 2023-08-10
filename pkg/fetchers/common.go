@@ -1,9 +1,9 @@
-package data
+package fetchers
 
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -22,11 +22,18 @@ type HttpRequester interface {
 }
 
 type HttpClient struct {
+	timeout time.Duration
+}
+
+func NewHttpClient(timeout time.Duration) *HttpClient {
+	return &HttpClient{
+		timeout: timeout,
+	}
 }
 
 func (h *HttpClient) DoGetRequest(url string, queryParams url.Values) ([]byte, error) {
 	client := &http.Client{
-		Timeout: 1 * time.Second,
+		Timeout: h.timeout,
 	}
 
 	req, err := http.NewRequest(GET_METHOD, url, nil)
@@ -50,7 +57,7 @@ func (h *HttpClient) DoGetRequest(url string, queryParams url.Values) ([]byte, e
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

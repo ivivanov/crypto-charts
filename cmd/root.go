@@ -4,12 +4,15 @@ Copyright © 2023 Ivan ivanivanov12@gmail.com
 package cmd
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/briandowns/spinner"
 
-	"github.com/ivivanov/crypto-charts/pkg/fetchers"
+	"github.com/ivivanov/crypto-charts/pkg/fetchers/bitstamp"
+	"github.com/ivivanov/crypto-charts/pkg/fetchers/osmosis"
 	"github.com/ivivanov/crypto-charts/pkg/generators"
 	"github.com/ivivanov/crypto-charts/pkg/job"
 	"github.com/ivivanov/crypto-charts/pkg/types"
@@ -39,7 +42,7 @@ const (
 
 var (
 	// Config
-	config          Config
+	config          *Config
 	cfgFilePathFlag string
 	printCfg        bool
 
@@ -60,16 +63,18 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "crypto-charts",
 		Short: "Creates and uploads SVG line charts",
-		Long: `Periodically pulls OHLC data from a set of data sources. 
-Generates simple line chart in SVG format and uploads 
-it to a place of your choice.`,
+		Long: `Pulls OHLC data from a set of data sources. 
+Generates simple line chart in SVG format for each pair and uploads 
+it to a google cloud storage.`,
 		PreRun: preRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			run := func() {
-				bitstamp := config.Fetchers["bitstamp"]
+				bitstampCfg := config.Fetchers["bitstamp"]
+				osmosisCfg := config.Fetchers["osmosis"]
 				job := job.NewJob(
 					[]types.Fetcher{
-						fetchers.NewBitstampFetcher(bitstamp.Pairs, bitstamp.Step, bitstamp.Limit),
+						bitstamp.NewBitstampFetcher(bitstampCfg.Pairs, bitstampCfg.Step, bitstampCfg.Limit),
+						osmosis.NewOsmosisFetcher(osmosisCfg.Pairs, osmosisCfg.Step),
 					},
 					getGenerator(config.Generator.IsAdvanced),
 					uploader.NewGoogleBucketUploader(config.Uploader.Bucket, config.Uploader.Path),
@@ -158,4 +163,41 @@ func getGenerator(isAdvanced bool) types.Generator {
 		config.Generator.Simple.BgrColor,
 		config.Generator.Simple.Margin,
 	)
+}
+
+func initConfig() {
+	if cfgFilePathFlag != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFilePathFlag)
+	} else {
+		// Find home directory.
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
+
+		// Search config in home directory with name ".cobra" (without extension).
+		viper.AddConfigPath(home)
+		viper.AddConfigPath(".")
+		viper.AddConfigPath("/")
+		viper.SetConfigType("yaml")
+		viper.SetConfigName(".crypto-charts")
+	}
+
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Using config file:", viper.ConfigFileUsed())
+}
+
+func preRun(ccmd *cobra.Command, args []string) {
+	err := viper.Unmarshal(&config)
+	if err != nil {
+		log.Fatalf("Unable to read Viper options into configuration: %v", err)
+	}
+
+	if printCfg {
+		fmt.Printf("%+v\n", config)
+	}
 }

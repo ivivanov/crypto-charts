@@ -3,7 +3,6 @@ package generators
 import (
 	"bytes"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/ivivanov/crypto-charts/pkg/types"
@@ -128,12 +127,7 @@ func xvalues(historicalData []types.MarketInfo) ([]time.Time, error) {
 	dates := make([]time.Time, len(historicalData))
 
 	for i := 0; i < len(historicalData); i++ {
-		unixTs, err := strconv.ParseInt(historicalData[i].Timestamp, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		dates[i] = time.Unix(unixTs, 0)
+		dates[i] = time.Unix(historicalData[i].Timestamp, 0)
 	}
 
 	return dates, nil

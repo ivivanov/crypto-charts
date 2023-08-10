@@ -5,8 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"time"
 
-	"github.com/ivivanov/crypto-charts/pkg/data"
+	"github.com/ivivanov/crypto-charts/pkg/fetchers"
 )
 
 const (
@@ -38,12 +39,12 @@ type OHLC struct {
 }
 
 type BitstampClient struct {
-	httpRequester data.HttpRequester
+	httpRequester fetchers.HttpRequester
 }
 
 func NewBitstampClient() *BitstampClient {
 	return &BitstampClient{
-		httpRequester: &data.HttpClient{},
+		httpRequester: fetchers.NewHttpClient(1 * time.Second),
 	}
 }
 

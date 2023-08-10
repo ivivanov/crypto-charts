@@ -2,12 +2,10 @@ package generators
 
 import (
 	"encoding/json"
-	"os"
 	"strings"
 	"testing"
 
-	"github.com/ivivanov/crypto-charts/pkg/data/bitstamp"
-	"github.com/ivivanov/crypto-charts/pkg/types"
+	"github.com/ivivanov/crypto-charts/pkg/fetchers/bitstamp"
 )
 
 const (
@@ -24,7 +22,7 @@ func TestNewLineChart(t *testing.T) {
 	}
 
 	ohlc := ohlcData["data"].OHCL
-	historicalData := types.MapOHLCtoHistoricalData(ohlc)
+	historicalData := bitstamp.MapOHLCtoMarketInfo(ohlc)
 	svg, err := lineChartGenerator.NewLineChart(historicalData)
 	if err != nil {
 		t.Fatal(err)
@@ -41,6 +39,4 @@ func TestNewLineChart(t *testing.T) {
 	if strings.Contains(svg, errorStr) {
 		t.Fatal("error generating svg")
 	}
-
-	os.WriteFile("chart.html", []byte(svg), 0644)
 }
