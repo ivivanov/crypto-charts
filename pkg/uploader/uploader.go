@@ -40,6 +40,9 @@ func (u *GoogleBucketUploader) UploadSVG(pair, svg string) error {
 		return err
 	}
 
+	// TODO: add flag to disable uploading
+	// os.WriteFile(fmt.Sprintf("%v.html", pair), []byte(svg), 0644)
+
 	return nil
 }
 

@@ -7,7 +7,6 @@ Using canvas for visualizing a chart might be heavy for the browser especially i
 ## Use
 ```
 go build .
-
 ```
 ```
 crypto-charts --help 
@@ -23,6 +22,8 @@ Current implementation includes:
 - fetchers:
     - bitstamp
     - osmosis
+    - ecb
+- synths
 - svg generators
     - simple line charts
     - more advanced charts with grids, prices, BB, SMA, ...
@@ -33,6 +34,9 @@ Current implementation includes:
 
 ### Add new fetcher
 To add new fetcher just register it in `job.NewJob` func. Fetchers without config in .crypto-charts.yaml will not work
+
+### Synths
+Generate new pair out of the history of other 2. In the current implementation we add new fetcher called ecb which generates artificial price series for bgneur and eurbgn. Then the new pair is used in combination with any other pair which has EUR as base or quote currency.
 
 ## Demo
 - 7 day simple charts: [demo](https://ivivanov.github.io/crypto-charts/demo-simple-7D-period.html)
@@ -45,3 +49,6 @@ To add new fetcher just register it in `job.NewJob` func. Fetchers without confi
 - add tests
 - add github build workflows
 - use fetchers in parallel
+- create self hosted CDN server where we can upload the SVGs
+    - maybe part of the same service so we can upload to the localhost and use nginx to serve
+    - orchestrate with docker compose 

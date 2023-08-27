@@ -23,14 +23,10 @@ func NewAdvancedLineChartGenerator() *AdvancedLineChartGenerator {
 }
 
 func (l *AdvancedLineChartGenerator) NewLineChart(historicalData []types.MarketInfo) (string, error) {
-	xv, err := xvalues(historicalData)
-	if err != nil {
-		return "", err
-	}
-
+	xv := xvalues(historicalData)
 	yv := yvalues(historicalData)
 
-	priceSeries := chart.TimeSeries{
+	priceSeries := chart.ContinuousSeries{
 		Style: chart.Style{
 			StrokeColor: chart.GetDefaultColor(0),
 		},
@@ -67,6 +63,21 @@ func (l *AdvancedLineChartGenerator) NewLineChart(historicalData []types.MarketI
 			Style: chart.Style{
 				StrokeColor: VeryLightGrey,
 			},
+			GridMajorStyle: chart.Style{
+				StrokeColor: VeryLightGrey,
+				StrokeWidth: 1.0,
+			},
+			GridMinorStyle: chart.Style{
+				StrokeColor: VeryLightGrey,
+				StrokeWidth: 1.0,
+			},
+			ValueFormatter: func(v interface{}) string {
+				vf, isFloat := v.(float64)
+				if !isFloat {
+					return ""
+				}
+				return time.Unix(int64(vf), 0).Format("01/06")
+			},
 		},
 		YAxis: chart.YAxis{
 			TickStyle: chart.Style{
@@ -90,16 +101,7 @@ func (l *AdvancedLineChartGenerator) NewLineChart(historicalData []types.MarketI
 					return ""
 				}
 
-				switch {
-				case vf < 0.0001: //6
-					return fmt.Sprintf("%0.6f", vf)
-				case vf < 0.001: //4
-					return fmt.Sprintf("%0.4f", vf)
-				case vf < 1000: //2
-					return fmt.Sprintf("%0.2f", vf)
-				}
-
-				return fmt.Sprintf("%0.0f", vf)
+				return formatPrice(vf)
 			},
 		},
 		YAxisSecondary: chart.YAxis{
@@ -111,6 +113,18 @@ func (l *AdvancedLineChartGenerator) NewLineChart(historicalData []types.MarketI
 			priceSeries,
 			// bbSeries,
 			// smaSeries,
+			// fancy label of the current price
+			// chart.AnnotationSeries{
+			// 	Style: chart.Style{
+			// 		Padding:     chart.Box{Top: 2, Left: -1, Right: 8, Bottom: 4},
+			// 		FillColor:   chart.ColorAlternateBlue,
+			// 		StrokeColor: drawing.ColorWhite,
+			// 	},
+
+			// 	Annotations: []chart.Value2{
+			// 		{XValue: xv[len(xv)-1], YValue: yv[len(yv)-1], Label: formatPrice(yv[len(yv)-1])},
+			// 	},
+			// },
 		},
 		Canvas: chart.Style{
 			FillColor: chart.ColorTransparent,
@@ -123,14 +137,14 @@ func (l *AdvancedLineChartGenerator) NewLineChart(historicalData []types.MarketI
 	return buf.String(), nil
 }
 
-func xvalues(historicalData []types.MarketInfo) ([]time.Time, error) {
-	dates := make([]time.Time, len(historicalData))
+func xvalues(historicalData []types.MarketInfo) []float64 {
+	epochs := make([]float64, len(historicalData))
 
 	for i := 0; i < len(historicalData); i++ {
-		dates[i] = time.Unix(historicalData[i].Timestamp, 0)
+		epochs[i] = float64(historicalData[i].Timestamp)
 	}
 
-	return dates, nil
+	return epochs
 }
 
 func yvalues(historicalData []types.MarketInfo) []float64 {
@@ -141,4 +155,17 @@ func yvalues(historicalData []types.MarketInfo) []float64 {
 	}
 
 	return prices
+}
+
+func formatPrice(value float64) string {
+	switch {
+	case value < 0.0001: //6
+		return fmt.Sprintf("%0.6f", value)
+	case value < 0.001: //4
+		return fmt.Sprintf("%0.4f", value)
+	case value < 1000: //2
+		return fmt.Sprintf("%0.2f", value)
+	}
+
+	return fmt.Sprintf("%0.0f", value)
 }

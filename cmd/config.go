@@ -30,7 +30,8 @@ type Generator struct {
 }
 
 type Config struct {
-	Fetchers  map[string]Fetcher `mapstructure:"fetchers"`
-	Uploader  Uploader           `mapstructure:"uploader"`
-	Generator Generator          `mapstructure:"generator"`
+	Fetchers  map[string]Fetcher  `mapstructure:"fetchers"`
+	Synths    map[string][]string `mapstructure:"synths"`
+	Uploader  Uploader            `mapstructure:"uploader"`
+	Generator Generator           `mapstructure:"generator"`
 }

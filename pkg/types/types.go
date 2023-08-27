@@ -5,6 +5,10 @@ type Fetcher interface {
 	GetAllMarketsInfo() (map[string][]MarketInfo, error)
 }
 
+type SynthGen interface {
+	GenerateSynth(pairA, pairB string, allMarketInfos map[string][]MarketInfo) ([]MarketInfo, error)
+}
+
 type Generator interface {
 	NewLineChart(historicalData []MarketInfo) (string, error)
 }

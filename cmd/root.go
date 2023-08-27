@@ -12,9 +12,11 @@ import (
 	"github.com/briandowns/spinner"
 
 	"github.com/ivivanov/crypto-charts/pkg/fetchers/bitstamp"
+	"github.com/ivivanov/crypto-charts/pkg/fetchers/ecb"
 	"github.com/ivivanov/crypto-charts/pkg/fetchers/osmosis"
 	"github.com/ivivanov/crypto-charts/pkg/generators"
 	"github.com/ivivanov/crypto-charts/pkg/job"
+	"github.com/ivivanov/crypto-charts/pkg/synth"
 	"github.com/ivivanov/crypto-charts/pkg/types"
 	"github.com/ivivanov/crypto-charts/pkg/uploader"
 
@@ -71,13 +73,17 @@ it to a google cloud storage.`,
 			run := func() {
 				bitstampCfg := config.Fetchers["bitstamp"]
 				osmosisCfg := config.Fetchers["osmosis"]
+				ecbCfg := config.Fetchers["ecb"]
 				job := job.NewJob(
 					[]types.Fetcher{
 						bitstamp.NewBitstampFetcher(bitstampCfg.Pairs, bitstampCfg.Step, bitstampCfg.Limit),
 						osmosis.NewOsmosisFetcher(osmosisCfg.Pairs, osmosisCfg.Step),
+						ecb.NewECBFetcher(ecbCfg.Pairs, ecbCfg.Limit),
 					},
+					synth.NewSynth(),
 					getGenerator(config.Generator.IsAdvanced),
 					uploader.NewGoogleBucketUploader(config.Uploader.Bucket, config.Uploader.Path),
+					config.Synths,
 				)
 
 				err := job.Run()

@@ -43,7 +43,7 @@ func (oc *OsmosisClient) GetOHLC(symbol string, timeFrame int) ([]OHLC, error) {
 	var bodyJson []byte
 	var err error
 	r := 0
-	for  {
+	for {
 		if bodyJson, err = oc.httpRequester.DoGetRequest(ohlcEndpoint, queryParams); err == nil {
 			break
 		} else if r == oc.retry {
