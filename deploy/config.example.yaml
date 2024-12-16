@@ -1,0 +1,44 @@
+fetchers:
+  bitstamp:
+    limit: 168 # integer <int32> [ 1 .. 1000 ]
+    step: 3600 # integer <int32> Enum: 60 180 300 900 1800 3600 7200 14400 21600 43200 86400 259200
+    pairs:
+      - "btcusd"
+    
+  second-fetcher:
+    limit: 168 # integer <int32> [ 1 .. 1000 ]
+    step: 3600 # integer <int32> Enum: 60 180 300 900 1800 3600 7200 14400 21600 43200 86400 259200
+    pairs:
+      - "ethbtc"
+
+  ecb:
+    limit: 168 # indicates how many records would be generated
+    pairs:
+      - "bgneur"
+      - "eurbgn"
+    
+synths:
+  usdbgn:
+    - "eurbgn"
+    - "eurusd"
+  btcbgn:
+    - "btceur"
+    - "bgneur"
+
+uploader:
+  bucket: crypto_charts
+  path: simple
+
+generator:
+  is-advanced: false
+  
+  simple:
+    width: 800
+    height: 400
+    line-color: 47
+    line-width: 2.0
+    margin: 0.0
+    bgr-color: "#00000000"
+  
+  advanced:
+    # todo

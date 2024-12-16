@@ -1,0 +1,19 @@
+services:
+  simple:
+    build:
+      context: ..
+      dockerfile: ./deploy/Dockerfile
+      args:
+        CONFIG: .crypto-charts.synths.simple.yaml
+        CRON: crontab.simple
+    image: charts-simple:${VERSION}
+    container_name: charts-simple
+  advanced:
+    build:
+      context: ..
+      dockerfile: ./deploy/Dockerfile
+      args:
+        CONFIG: .crypto-charts.synths.advanced.yaml
+        CRON: crontab.advanced
+    image: charts-advanced:${VERSION}
+    container_name: charts-advanced
